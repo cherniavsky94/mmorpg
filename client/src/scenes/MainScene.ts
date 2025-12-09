@@ -1,40 +1,21 @@
-import Phaser from "phaser";
-import * as Colyseus from "colyseus.js";
-import { useGameState } from "../state/store";
+import { connectToCity } from "../network/connectCity";
 
 export class MainScene extends Phaser.Scene {
-  client!: Colyseus.Client;
-
-  constructor() {
-    super("MainScene");
-  }
-
   async create() {
-    const wsUrl = import.meta.env.VITE_WS_URL;
+    const room = await connectToCity();
 
-    this.client = new Colyseus.Client(wsUrl);
+    this.add.text(50, 50, "Connected to City!", {
+      color: "#fff",
+      fontSize: "28px",
+    });
 
-    try {
-      const room = await this.client.joinOrCreate("base");
+    // слушаем изменения state комнаты
+    room.state.players.onAdd = (player, key) => {
+      console.log("Player joined city:", key);
+    };
 
-      useGameState.getState().setConnected(true);
-      useGameState.getState().setPlayerId(room.sessionId);
-
-      this.add.text(100, 100, "Connected to BaseRoom!", {
-        color: "#fff",
-        fontSize: "28px",
-      });
-
-      this.add.text(100, 150, `Session ID: ${room.sessionId}`, {
-        color: "#0f0",
-        fontSize: "18px",
-      });
-    } catch (error) {
-      console.error("Failed to connect:", error);
-      this.add.text(100, 100, "Failed to connect to server", {
-        color: "#f00",
-        fontSize: "28px",
-      });
-    }
+    room.state.players.onRemove = (player, key) => {
+      console.log("Player left city:", key);
+    };
   }
 }

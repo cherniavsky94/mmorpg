@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Colyseus Connection Test</title>
+  <script src="https://unpkg.com/colyseus.js@^0.15.0/dist/colyseus.js"></script>
+</head>
+<body>
+  <h1>Colyseus Connection Test</h1>
+  <div id="status">Testing connection...</div>
+  <div id="result"></div>
+
+  <script>
+    const wsUrl = "ws://localhost:2567";
+    const client = new Colyseus.Client(wsUrl);
+    
+    async function testConnection() {
+      try {
+        const room = await client.joinOrCreate("city");
+        document.getElementById("status").innerHTML = "✅ Connected successfully!";
+        document.getElementById("result").innerHTML = `
+          <p>Room ID: ${room.id}</p>
+          <p>Session ID: ${room.sessionId}</p>
+          <p>Room Name: ${room.name}</p>
+        `;
+        console.log("Connected to room:", room);
+      } catch (error) {
+        document.getElementById("status").innerHTML = "❌ Connection failed";
+        document.getElementById("result").innerHTML = `<p>Error: ${error.message}</p>`;
+        console.error("Connection error:", error);
+      }
+    }
+
+    testConnection();
+  </script>
+</body>
+</html>

@@ -1,15 +1,11 @@
 import { create } from "zustand";
 
 interface GameState {
-  connected: boolean;
-  playerId: string;
-  setConnected: (v: boolean) => void;
-  setPlayerId: (id: string) => void;
+  cityRoom: any | null;
+  setCityRoom: (room: any) => void;
 }
 
 export const useGameState = create<GameState>((set) => ({
-  connected: false,
-  playerId: "",
-  setConnected: (v) => set({ connected: v }),
-  setPlayerId: (id) => set({ playerId: id }),
+  cityRoom: null,
+  setCityRoom: (room) => set({ cityRoom: room }),
 }));

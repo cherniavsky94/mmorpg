@@ -1,20 +1,43 @@
-import http from "http";
 import express from "express";
+import cors from "cors";
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
-import { BaseRoom } from "./rooms/BaseRoom.js";
+import http from "http";
+
+import { CityRoom } from "./rooms/CityRoom.js";
+import { BattleRoom } from "./rooms/BattleRoom.js";
 
 const PORT = Number(process.env.PORT) || 2567;
 
 const app = express();
-const server = http.createServer(app);
+
+// Enable CORS for all origins (Gitpod URLs)
+app.use(cors());
+app.use(express.json());
+
+const httpServer = http.createServer(app);
 
 const gameServer = new Server({
-  transport: new WebSocketTransport({ server }),
+  transport: new WebSocketTransport({
+    server: httpServer,
+  }),
 });
 
-gameServer.define("base", BaseRoom);
+// Define rooms BEFORE calling listen()
+gameServer.define("city", CityRoom);
+gameServer.define("battle", BattleRoom);
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log("Colyseus server running on port", PORT);
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    message: "Colyseus server running",
+    rooms: ["city", "battle"]
+  });
 });
+
+// Start Colyseus server - this registers matchmaking routes
+gameServer.listen(PORT);
+
+console.log(`✅ Colyseus server listening on port ${PORT}`);
+console.log(`📍 Matchmaking: http://localhost:${PORT}/matchmake/joinOrCreate/city`);
