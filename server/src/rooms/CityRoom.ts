@@ -39,14 +39,8 @@ export class CityRoom extends Room<CityState> {
 
   async transferToBattle(client) {
     console.log("Transferring player to battle:", client.sessionId);
-
-    // создаём battle room
-    const battle = await this.presence.requestFromAny("create_battle_room");
-
-    // выходим из города
-    this.clients.find(c => c.sessionId === client.sessionId)?.leave();
-
-    // входим в бой
-    client.join(battle.roomId);
+    
+    // Send message to client to join battle room
+    client.send("joinBattle", { roomName: "battle" });
   }
 }
