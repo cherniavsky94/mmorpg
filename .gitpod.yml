@@ -1,0 +1,23 @@
+image:
+  file: .gitpod.Dockerfile
+
+# 👇 Gitpod tasks
+tasks:
+  - name: Install dependencies
+    init: pnpm install
+    command: echo "Dependencies installed"
+
+  - name: Start Dev
+    command: pnpm dev
+
+# 👇 PUBLIC PORTS
+ports:
+  - port: 5173
+    name: Vite Client
+    visibility: public
+    onOpen: open-preview
+
+  - port: 2567
+    name: Colyseus Server
+    visibility: public
+    onOpen: notify

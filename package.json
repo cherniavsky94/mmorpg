@@ -1,0 +1,30 @@
+{
+  "name": "mmorpg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MMORPG game with Phaser, Colyseus, Zustand, Prisma, and Supabase",
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:server\" \"pnpm dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
+    "dev:client": "pnpm -C client dev",
+    "dev:server": "pnpm -C server dev",
+    "build:client": "pnpm -C client build",
+    "build:server": "pnpm -C server build",
+    "prisma:migrate": "pnpm -C prisma migrate",
+    "prisma:generate": "pnpm -C prisma generate",
+    "prisma:push": "pnpm -C prisma prisma db push",
+    "prisma:studio": "pnpm -C prisma prisma studio"
+  },
+  "keywords": [
+    "mmorpg",
+    "phaser",
+    "colyseus",
+    "zustand",
+    "prisma",
+    "supabase"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
