@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    .log { margin: 5px 0; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Colyseus Connection Test</h1>
+  <div id="status">Testing...</div>
+  <div id="logs"></div>
+
+  <script type="module">
+    import * as Colyseus from '/node_modules/.vite/deps/colyseus__js.js?v=9d87c598';
+
+    const log = (msg, isError = false) => {
+      const div = document.createElement('div');
+      div.className = 'log ' + (isError ? 'error' : '');
+      div.textContent = new Date().toISOString() + ': ' + msg;
+      document.getElementById('logs').appendChild(div);
+      console.log(msg);
+    };
+
+    // Try different URLs
+    const urls = [
+      'https://2567--019b03d2-4e60-7251-a151-670a306cc63e.eu-central-1-01.gitpod.dev',
+      'wss://2567--019b03d2-4e60-7251-a151-670a306cc63e.eu-central-1-01.gitpod.dev',
+      'http://localhost:2567',
+      'ws://localhost:2567'
+    ];
+
+    async function testConnection(url) {
+      log(`Testing: ${url}`);
+      try {
+        const client = new Colyseus.Client(url);
+        log(`Client created for ${url}`);
+        
+        const room = await client.joinOrCreate("city");
+        log(`✅ SUCCESS with ${url}`, false);
+        log(`Room ID: ${room.id}, Session: ${room.sessionId}`);
+        document.getElementById('status').innerHTML = `<span class="success">✅ Connected with ${url}</span>`;
+        return true;
+      } catch (error) {
+        log(`❌ FAILED with ${url}: ${error.message}`, true);
+        console.error(error);
+        return false;
+      }
+    }
+
+    async function testAll() {
+      log('Starting connection tests...');
+      for (const url of urls) {
+        const success = await testConnection(url);
+        if (success) {
+          log('Connection successful! Stopping tests.');
+          break;
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      log('All tests completed.');
+    }
+
+    testAll();
+  </script>
+</body>
+</html>
